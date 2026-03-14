@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flutter Razorpay Test - Exact Same Approach</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .button { 
+            padding: 15px 30px; 
+            background: #FF9800; 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            width: 100%;
+        }
+        .button:hover { background: #FF6F00; }
+        .result { 
+            margin-top: 20px; 
+            padding: 15px; 
+            border-radius: 8px; 
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .log { 
+            background: #f8f9fa; 
+            border: 1px solid #dee2e6; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 4px; 
+            font-family: monospace; 
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flutter Razorpay Test - Exact Same Approach</h1>
+        <p>This test uses the exact same JavaScript approach as the Flutter web service.</p>
+        
+        <button id="flutter-approach-btn" class="button">
+            🚀 Test Flutter Approach - Pay ₹800.00
+        </button>
+        
+        <div id="result"></div>
+        <div id="console-log" class="log"></div>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        // Console logging
+        const logDiv = document.getElementById('console-log');
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        function addLog(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog(args.join(' '), 'error');
+        };
+
+        function showResult(message, type) {
+            const result = document.getElementById('result');
+            result.innerHTML = message;
+            result.className = `result ${type}`;
+            addLog(`Result: ${message}`, type);
+        }
+
+        // Set up message listener (like Flutter does)
+        window.addEventListener('message', function(event) {
+            const data = event.data;
+            console.log('📨 Received message:', data);
+            
+            if (data && typeof data === 'object') {
+                if (data.type === 'razorpay_success') {
+                    console.log('✅ Razorpay payment success:', data.response);
+                    showResult('✅ Payment Success! Payment ID: ' + data.response.razorpay_payment_id, 'success');
+                } else if (data.type === 'razorpay_failed') {
+                    console.log('❌ Razorpay payment failed:', data.response);
+                    const errorMsg = data.response && data.response.error ? data.response.error.description : 'Unknown error';
+                    showResult('❌ Payment failed: ' + errorMsg, 'error');
+                } else if (data.type === 'razorpay_dismiss') {
+                    console.log('❌ Razorpay payment dismissed');
+                    showResult('❌ Payment cancelled by user', 'error');
+                }
+            }
+        });
+
+        // Flutter's exact approach
+        document.getElementById('flutter-approach-btn').onclick = function(e) {
+            e.preventDefault();
+            console.log('🔘 Flutter approach button clicked');
+            showResult('🚀 Opening Razorpay using Flutter approach...', 'info');
+            
+            if (typeof Razorpay === 'undefined') {
+                console.error('❌ Razorpay not loaded');
+                showResult('❌ Razorpay script not loaded', 'error');
+                return;
+            }
+            
+            console.log('✅ Razorpay available, using Flutter approach...');
+            
+            // This is the EXACT same JavaScript code that Flutter generates
+            const jsCode = `
+                (function() {
+                  console.log('🚀 Direct Razorpay execution...');
+                  
+                  if (typeof Razorpay === 'undefined') {
+                    console.error('❌ Razorpay not loaded!');
+                    window.postMessage({ type: 'razorpay_failed', response: { error: { description: 'Razorpay not loaded' } } }, '*');
+                    return;
+                  }
+                  
+                  var options = {
+                    "key": "rzp_test_RpjqLQfGM5jazI",
+                    "amount": "80000",
+                    "currency": "INR",
+                    "name": "AgriCare - Agricultural Services",
+                    "description": "Ploughing Services - 2024-12-20",
+                    "prefill": {
+                      "name": "Test User",
+                      "email": "test@agricare.com",
+                      "contact": "9999999999"
+                    },
+                    "theme": {
+                      "color": "#10B981"
+                    },
+                    "handler": function (response) {
+                      console.log('✅ Payment Success:', response);
+                      window.postMessage({ type: 'razorpay_success', response: response }, '*');
+                    },
+                    "modal": {
+                      "ondismiss": function() {
+                        console.log('❌ Payment dismissed');
+                        window.postMessage({ type: 'razorpay_dismiss' }, '*');
+                      }
+                    }
+                  };
+                  
+                  console.log('Creating Razorpay instance with options:', options);
+                  
+                  var rzp = new Razorpay(options);
+                  rzp.on('payment.failed', function (response) {
+                    console.log('❌ Payment Failed:', response);
+                    window.postMessage({ type: 'razorpay_failed', response: response }, '*');
+                  });
+                  
+                  console.log('🚀 Opening Razorpay checkout...');
+                  rzp.open();
+                  console.log('✅ Razorpay.open() called successfully');
+                  
+                })();
+            `;
+            
+            try {
+                console.log('🚀 Executing Flutter JavaScript code...');
+                eval(jsCode);
+                console.log('✅ Flutter JavaScript executed successfully');
+            } catch (e) {
+                console.error('❌ JavaScript Error:', e);
+                showResult('❌ Error: ' + e.message, 'error');
+            }
+        };
+        
+        // Check if Razorpay loaded
+        window.onload = function() {
+            if (typeof Razorpay !== 'undefined') {
+                showResult('✅ Razorpay loaded successfully. Click button to test Flutter approach.', 'success');
+                console.log('✅ Razorpay script loaded successfully');
+            } else {
+                showResult('❌ Razorpay failed to load', 'error');
+                console.error('❌ Razorpay script failed to load');
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "682315208826",
+    "project_id": "agricare-c9542",
+    "storage_bucket": "agricare-c9542.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682315208826:android:11bd88c333791d2ee6c3c3",
+        "android_client_info": {
+          "package_name": "agricare.vinayak.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "682315208826-gor1dgjugelbif15jg58un5ft18nrh81.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "agricare.vinayak.com",
+            "certificate_hash": "5e50cbc2c1512e16998dd654dbd264332a0087ae"
+          }
+        },
+        {
+          "client_id": "682315208826-73bm9p46a5p1o5ug1lmhrqjlsm3bjdv8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBs0UY1caSKEVkHT5kgFGnxqBoT6bohMHw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "682315208826-73bm9p46a5p1o5ug1lmhrqjlsm3bjdv8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

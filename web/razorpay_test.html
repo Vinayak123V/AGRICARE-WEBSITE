@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Razorpay Test - AgriCare</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .button { 
+            background: #10B981; 
+            color: white; 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .button:hover { background: #059669; }
+        .info { background: #f0f9ff; padding: 15px; border-radius: 8px; margin: 10px 0; }
+        .success { background: #f0fdf4; padding: 15px; border-radius: 8px; margin: 10px 0; }
+        .error { background: #fef2f2; padding: 15px; border-radius: 8px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌾 AgriCare - Razorpay Test</h1>
+        
+        <div class="info">
+            <h3>Test Payment Details:</h3>
+            <p><strong>Card:</strong> 4111 1111 1111 1111</p>
+            <p><strong>Expiry:</strong> 12/25 (any future date)</p>
+            <p><strong>CVV:</strong> 123 (any 3 digits)</p>
+            <p><strong>Amount:</strong> ₹800.00 (same as app)</p>
+        </div>
+        
+        <button class="button" onclick="openRazorpay()">🚀 Test Razorpay Payment</button>
+        
+        <div id="status"></div>
+        
+        <div class="info">
+            <h3>Debug Console:</h3>
+            <div id="console" style="background: #000; color: #0f0; padding: 10px; font-family: monospace; height: 200px; overflow-y: auto;"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Debug console
+        function log(message) {
+            console.log(message);
+            const consoleDiv = document.getElementById('console');
+            consoleDiv.innerHTML += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+        
+        function setStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = type;
+            statusDiv.innerHTML = '<h3>' + message + '</h3>';
+        }
+        
+        function openRazorpay() {
+            log('🚀 Starting Razorpay test...');
+            setStatus('🔄 Initializing payment...', 'info');
+            
+            // Check if Razorpay is loaded
+            if (typeof Razorpay === 'undefined') {
+                log('❌ Razorpay not loaded! Attempting to load...');
+                setStatus('❌ Razorpay script not loaded, reloading...', 'error');
+                
+                // Try to load Razorpay script dynamically
+                var script = document.createElement('script');
+                script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+                script.onload = function() {
+                    log('✅ Razorpay script loaded dynamically');
+                    setTimeout(openRazorpay, 1000); // Retry after 1 second
+                };
+                script.onerror = function() {
+                    log('❌ Failed to load Razorpay script dynamically');
+                    setStatus('❌ Failed to load Razorpay script', 'error');
+                };
+                document.head.appendChild(script);
+                return;
+            }
+            
+            log('✅ Razorpay loaded successfully');
+            
+            // Test with ₹800 like in the app
+            var options = {
+                "key": "rzp_test_RpjqLQfGM5jazI",
+                "amount": "80000", // 800 INR in paise (like in the app)
+                "currency": "INR",
+                "name": "AgriCare - Agricultural Services",
+                "description": "Test Payment for Deep Ploughing Services",
+                "handler": function (response) {
+                    log('✅ Payment Success: ' + JSON.stringify(response));
+                    setStatus('✅ Payment Successful! Payment ID: ' + response.razorpay_payment_id, 'success');
+                },
+                "prefill": {
+                    "name": "Test User",
+                    "email": "test@agricare.com",
+                    "contact": "9999999999"
+                },
+                "theme": {
+                    "color": "#10B981"
+                },
+                "modal": {
+                    "ondismiss": function() {
+                        log('❌ Payment dismissed by user');
+                        setStatus('❌ Payment cancelled by user', 'error');
+                    }
+                }
+            };
+            
+            log('📋 Razorpay options: ' + JSON.stringify(options, null, 2));
+            
+            try {
+                var rzp = new Razorpay(options);
+                log('✅ Razorpay instance created');
+                
+                rzp.on('payment.failed', function (response) {
+                    log('❌ Payment Failed: ' + JSON.stringify(response));
+                    setStatus('❌ Payment Failed: ' + response.error.description, 'error');
+                });
+                
+                log('🚀 Opening Razorpay checkout...');
+                setStatus('🚀 Opening Razorpay checkout...', 'info');
+                rzp.open();
+                log('✅ Razorpay.open() called successfully');
+                
+            } catch (e) {
+                log('❌ Error: ' + e.message);
+                setStatus('❌ Error: ' + e.message, 'error');
+            }
+        }
+        
+        // Test Razorpay availability on page load
+        window.onload = function() {
+            if (typeof Razorpay !== 'undefined') {
+                log('✅ Razorpay script loaded and ready');
+                setStatus('✅ Razorpay ready for testing', 'success');
+            } else {
+                log('❌ Razorpay script not loaded');
+                setStatus('❌ Razorpay script not loaded', 'error');
+            }
+        };
+    </script>
+</body>
+</html>

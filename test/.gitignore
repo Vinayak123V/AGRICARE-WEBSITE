@@ -1,0 +1,54 @@
+# .gitignore
+
+# -----------------
+# Build Artifacts
+# -----------------
+/build
+/.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.dart_test_cache/
+
+# -----------------
+# Native Caches/Config
+# -----------------
+# Android
+/android/local.properties
+/android/.gradle
+/android/key.properties
+/android/gradlew*
+
+# iOS/macOS
+/ios/.build
+/ios/Flutter/.ios
+/macos/.symlinks
+/macos/Flutter/ephemeral/
+.DS_Store
+
+# -----------------
+# IDE/Tooling Files
+# -----------------
+# VS Code
+.vscode/
+# IntelliJ/Android Studio
+.idea/
+*.iml
+*/*.iml
+
+# -----------------
+# Dart/Pub Dependency Files
+# -----------------
+pubspec.lock  # Often committed for consistent dependency versions, but excluded by default
+/lib/api_config.dart # Example of ignoring a file containing API keys
+/assets/keys.json 
+
+# -----------------
+# Specific to Flutter
+# -----------------
+*.freezed.dart
+*.g.dart
+# The generated ephemeral directory for web/desktop builds
+/web/flutter_bootstrap.js
+/linux/flutter/ephemeral
+/windows/flutter/ephemeral

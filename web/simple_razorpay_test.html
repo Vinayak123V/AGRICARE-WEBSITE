@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Razorpay Test</title>
+</head>
+<body>
+    <h1>Simple Razorpay Test</h1>
+    <button id="pay-btn" style="padding: 15px 30px; background: #10B981; color: white; border: none; border-radius: 5px; font-size: 16px;">
+        Pay ₹800 - Simple Test
+    </button>
+    
+    <div id="result" style="margin-top: 20px; padding: 10px; border-radius: 5px;"></div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        function showResult(message, type) {
+            const result = document.getElementById('result');
+            result.innerHTML = message;
+            result.style.background = type === 'success' ? '#d4edda' : type === 'error' ? '#f8d7da' : '#d1ecf1';
+            result.style.color = type === 'success' ? '#155724' : type === 'error' ? '#721c24' : '#0c5460';
+        }
+
+        document.getElementById('pay-btn').onclick = function(e) {
+            e.preventDefault();
+            console.log('🔘 Pay button clicked');
+            showResult('🚀 Opening Razorpay...', 'info');
+            
+            if (typeof Razorpay === 'undefined') {
+                console.error('❌ Razorpay not loaded');
+                showResult('❌ Razorpay script not loaded', 'error');
+                return;
+            }
+            
+            console.log('✅ Razorpay available, creating checkout...');
+            
+            var options = {
+                "key": "rzp_test_RpjqLQfGM5jazI",
+                "amount": "80000", // 800 INR in paise
+                "currency": "INR",
+                "name": "AgriCare - Agricultural Services",
+                "description": "Test Payment for Agricultural Services",
+                "handler": function (response) {
+                    console.log('✅ Payment Success:', response);
+                    showResult('✅ Payment Success! Payment ID: ' + response.razorpay_payment_id, 'success');
+                },
+                "prefill": {
+                    "name": "Test User",
+                    "email": "test@agricare.com",
+                    "contact": "9999999999"
+                },
+                "theme": {
+                    "color": "#10B981"
+                },
+                "modal": {
+                    "ondismiss": function() {
+                        console.log('❌ Payment dismissed by user');
+                        showResult('❌ Payment cancelled by user', 'error');
+                    }
+                }
+            };
+            
+            try {
+                console.log('🚀 Creating Razorpay instance with options:', options);
+                var rzp = new Razorpay(options);
+                
+                rzp.on('payment.failed', function (response) {
+                    console.log('❌ Payment Failed:', response);
+                    showResult('❌ Payment failed: ' + (response.error ? response.error.description : 'Unknown error'), 'error');
+                });
+                
+                console.log('🚀 Opening Razorpay checkout...');
+                rzp.open();
+                console.log('✅ Razorpay.open() executed successfully');
+                
+            } catch (e) {
+                console.error('❌ JavaScript Error:', e);
+                showResult('❌ Error: ' + e.message, 'error');
+            }
+        };
+        
+        // Check if Razorpay loaded
+        window.onload = function() {
+            if (typeof Razorpay !== 'undefined') {
+                showResult('✅ Razorpay loaded successfully. Click button to test.', 'success');
+            } else {
+                showResult('❌ Razorpay failed to load', 'error');
+            }
+        };
+    </script>
+</body>
+</html>
