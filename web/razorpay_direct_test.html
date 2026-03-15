@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Razorpay Direct Test - Your Code</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .button { 
+            background: #10B981; 
+            color: white; 
+            padding: 15px 30px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .button:hover { background: #059669; }
+        .info { background: #f0f9ff; padding: 15px; border-radius: 8px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🌾 AgriCare - Direct Razorpay Test</h1>
+    
+    <div class="info">
+        <h3>Using Your Exact Code Structure:</h3>
+        <p><strong>Amount:</strong> ₹800.00 (80000 paise)</p>
+        <p><strong>Key:</strong> rzp_test_RpjqLQfGM5jazI</p>
+        <p><strong>Test Card:</strong> 4111 1111 1111 1111</p>
+    </div>
+    
+    <!-- Your exact button structure -->
+    <button id="rzp-button1" class="button">Pay ₹800 - Direct Test</button>
+    
+    <div id="status" style="margin-top: 20px;"></div>
+
+    <!-- Your exact script structure -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        // Using your exact options structure with AgriCare details
+        var options = {
+            "key": "rzp_test_RpjqLQfGM5jazI", // Your Key ID
+            "amount": "80000", // Amount is in currency subunits (800 INR = 80000 paise)
+            "currency": "INR",
+            "name": "AgriCare - Agricultural Services", // Business name
+            "description": "Deep Ploughing Service Payment",
+            "image": "https://ui-avatars.com/api/?name=AgriCare&background=10B981&color=fff",
+            "prefill": {
+                "name": "Test User", // Customer's name
+                "email": "test@agricare.com",
+                "contact": "9999999999" // Customer's phone number
+            },
+            "notes": {
+                "address": "AgriCare Agricultural Services",
+                "service": "Deep Ploughing"
+            },
+            "theme": {
+                "color": "#10B981"
+            },
+            "handler": function (response) {
+                console.log('✅ Payment Success:', response);
+                document.getElementById('status').innerHTML = 
+                    '<div style="background: #f0fdf4; padding: 15px; border-radius: 8px;">' +
+                    '<h3>✅ Payment Successful!</h3>' +
+                    '<p><strong>Payment ID:</strong> ' + response.razorpay_payment_id + '</p>' +
+                    '<p><strong>Status:</strong> Payment completed successfully</p>' +
+                    '</div>';
+            },
+            "modal": {
+                "ondismiss": function() {
+                    console.log('❌ Payment dismissed');
+                    document.getElementById('status').innerHTML = 
+                        '<div style="background: #fef2f2; padding: 15px; border-radius: 8px;">' +
+                        '<h3>❌ Payment Cancelled</h3>' +
+                        '<p>Payment was cancelled by user</p>' +
+                        '</div>';
+                }
+            }
+        };
+        
+        // Your exact Razorpay instance creation
+        var rzp1 = new Razorpay(options);
+        
+        // Set up payment failure handler
+        rzp1.on('payment.failed', function (response) {
+            console.log('❌ Payment Failed:', response);
+            document.getElementById('status').innerHTML = 
+                '<div style="background: #fef2f2; padding: 15px; border-radius: 8px;">' +
+                '<h3>❌ Payment Failed</h3>' +
+                '<p><strong>Error:</strong> ' + response.error.description + '</p>' +
+                '</div>';
+        });
+        
+        // Your exact button click handler
+        document.getElementById('rzp-button1').onclick = function(e) {
+            console.log('🚀 Pay button clicked - opening Razorpay...');
+            document.getElementById('status').innerHTML = 
+                '<div style="background: #f0f9ff; padding: 15px; border-radius: 8px;">' +
+                '<h3>🚀 Opening Razorpay...</h3>' +
+                '<p>Please wait while we open the payment gateway...</p>' +
+                '</div>';
+            
+            rzp1.open();
+            e.preventDefault();
+        }
+        
+        // Check if Razorpay loaded
+        window.onload = function() {
+            if (typeof Razorpay !== 'undefined') {
+                console.log('✅ Razorpay loaded successfully');
+                document.getElementById('status').innerHTML = 
+                    '<div style="background: #f0fdf4; padding: 15px; border-radius: 8px;">' +
+                    '<h3>✅ Razorpay Ready</h3>' +
+                    '<p>Click the button above to test payment</p>' +
+                    '</div>';
+            } else {
+                console.log('❌ Razorpay failed to load');
+                document.getElementById('status').innerHTML = 
+                    '<div style="background: #fef2f2; padding: 15px; border-radius: 8px;">' +
+                    '<h3>❌ Razorpay Not Loaded</h3>' +
+                    '<p>Please refresh the page</p>' +
+                    '</div>';
+            }
+        };
+    </script>
+</body>
+</html>
